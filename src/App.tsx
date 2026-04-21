@@ -87,6 +87,13 @@ export default function App() {
   const [project, setProject] = useState<RABProject>(INITIAL_PROJECT);
   const [activeTab, setActiveTab] = useState<'editor' | 'summary'>('editor');
   const [isPriceLocked, setIsPriceLocked] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const subTotal = useMemo(() => {
     return project.categories.reduce((total, cat) => {
@@ -316,25 +323,24 @@ export default function App() {
           </div>
         </div>
 
-        {/* Tab Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8 md:mb-10">
-          <div className="flex p-1 bg-slate-200/50 rounded-2xl overflow-x-auto sm:overflow-visible">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-6 md:mb-10">
+          <div className="flex p-1 bg-slate-200/50 rounded-2xl overflow-x-auto no-scrollbar touch-pan-x">
             <button 
               onClick={() => setActiveTab('editor')}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'editor' ? 'bg-white text-brand-primary shadow-md' : 'text-slate-500 hover:text-brand-primary'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'editor' ? 'bg-white text-brand-primary shadow-md' : 'text-slate-500 hover:text-brand-primary'}`}
             >
-              <List size={18} /> Editor Pekerjaan
+              <List size={windowWidth < 640 ? 16 : 18} /> Editor Pekerjaan
             </button>
             <button 
               onClick={() => setActiveTab('summary')}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 sm:px-8 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'summary' ? 'bg-white text-brand-primary shadow-md' : 'text-slate-500 hover:text-brand-info'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'summary' ? 'bg-white text-brand-primary shadow-md' : 'text-slate-500 hover:text-brand-info'}`}
             >
-              <PieChartIcon size={18} /> Rincian Budget
+              <PieChartIcon size={windowWidth < 640 ? 16 : 18} /> Rincian Budget
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-10">
+        <div className="grid grid-cols-12 gap-8 lg:gap-10">
           <div className="col-span-12 lg:col-span-8">
             <AnimatePresence mode="wait">
               {activeTab === 'editor' ? (
@@ -346,10 +352,10 @@ export default function App() {
                 >
                   {project.categories.map((category, catIdx) => (
                     <div key={category.id} className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-5 md:p-8 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-shadow duration-500">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
-                        <div className="flex items-center gap-3 md:gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 md:mb-8 gap-4">
+                        <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
                           <div className={cn(
-                            "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-lg md:text-xl shadow-lg border shrink-0",
+                            "w-9 h-9 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-base md:text-xl shadow-lg border shrink-0",
                             CAT_BG_COLORS[catIdx % CAT_BG_COLORS.length]
                           )}>
                             {catIdx + 1}
@@ -362,17 +368,17 @@ export default function App() {
                               categories: prev.categories.map(c => c.id === category.id ? { ...c, name: e.target.value } : c)
                             }))}
                             className={cn(
-                              "bg-transparent border-none focus:ring-0 p-0 text-xl md:text-2xl font-black w-full",
+                              "bg-transparent border-none focus:ring-0 p-0 text-lg md:text-2xl font-black w-full min-w-0 truncate",
                               catIdx === 0 ? "text-brand-primary" : 
                               catIdx === 1 ? "text-brand-success" : 
                               catIdx === 2 ? "text-brand-warning" : "text-brand-info"
                             )}
                           />
                         </div>
-                        <div className="flex items-center gap-6 justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-50">
-                           <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
-                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 italic">Total Seksi</span>
-                             <span className="text-lg md:text-xl font-black text-slate-800">
+                        <div className="flex items-center gap-4 justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-50">
+                           <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto">
+                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:mb-1 italic">Total Seksi</span>
+                             <span className="text-base md:text-xl font-black text-slate-800">
                                Rp. {formatCurrency(category.items.reduce((s, i) => s + i.totalPrice, 0))}
                              </span>
                            </div>
@@ -570,8 +576,8 @@ export default function App() {
                             data={chartData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={window.innerWidth < 640 ? 65 : 90}
-                            outerRadius={window.innerWidth < 640 ? 95 : 130}
+                            innerRadius={windowWidth < 640 ? 65 : 90}
+                            outerRadius={windowWidth < 640 ? 95 : 130}
                             paddingAngle={8}
                             dataKey="value"
                             stroke="none"
