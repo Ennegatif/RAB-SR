@@ -6,6 +6,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Plus, 
+  Minus,
   Trash2, 
   Download, 
   PieChart as PieChartIcon, 
@@ -17,7 +18,8 @@ import {
   Info,
   Smartphone,
   Lock,
-  Unlock
+  Unlock,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -62,20 +64,20 @@ const INITIAL_PROJECT: RABProject = {
       id: 'cat-2',
       name: 'II. BIAYA TAMBAHAN',
       items: [
-        { id: 'item-3', description: 'SURVEY - 6 M STANDART', quantity: 1, unit: 'm', unitPrice: 18900, totalPrice: 18900 },
-        { id: 'item-4', description: 'BOR JACKING', quantity: 1, unit: 'm', unitPrice: 45000, totalPrice: 45000 },
-        { id: 'item-5', description: 'GALIAN BOR JACKING', quantity: 1, unit: 'ls', unitPrice: 156800, totalPrice: 156800 },
-        { id: 'item-6', description: 'RABAT CROSING ASPAL', quantity: 1, unit: 'm', unitPrice: 29700, totalPrice: 29700 },
-        { id: 'item-7', description: 'RABAT JALAN', quantity: 1, unit: 'm', unitPrice: 23700, totalPrice: 23700 },
-        { id: 'item-8', description: 'RABAT HALAMAN', quantity: 1, unit: 'm', unitPrice: 14800, totalPrice: 14800 },
-        { id: 'item-9', description: 'PAVING', quantity: 1, unit: 'm', unitPrice: 7600, totalPrice: 7600 },
+        { id: 'item-3', description: 'Tambahan Pipa HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
+        { id: 'item-4', description: 'BOR JACKING', quantity: 0, unit: 'm', unitPrice: 45000, totalPrice: 0 },
+        { id: 'item-5', description: 'GALIAN BOR JACKING', quantity: 0, unit: 'ls', unitPrice: 156800, totalPrice: 0 },
+        { id: 'item-6', description: 'RABAT CROSING ASPAL', quantity: 0, unit: 'm', unitPrice: 29700, totalPrice: 0 },
+        { id: 'item-7', description: 'RABAT JALAN', quantity: 0, unit: 'm', unitPrice: 23700, totalPrice: 0 },
+        { id: 'item-8', description: 'RABAT HALAMAN', quantity: 0, unit: 'm', unitPrice: 14800, totalPrice: 0 },
+        { id: 'item-9', description: 'PAVING', quantity: 0, unit: 'm', unitPrice: 7600, totalPrice: 0 },
       ]
     },
     {
       id: 'cat-3',
       name: 'III. BIAYA LAIN-LAIN',
       items: [
-        { id: 'item-11', description: 'MATERAI 10000', quantity: 1, unit: 'bh', unitPrice: 12000, totalPrice: 12000 },
+        { id: 'item-11', description: 'MATERAI 10000', quantity: 0, unit: 'bh', unitPrice: 12000, totalPrice: 0 },
       ]
     }
   ],
@@ -223,21 +225,21 @@ export default function App() {
     <div className="min-h-screen bg-brand-bg font-sans selection:bg-brand-primary selection:text-white pb-20 text-slate-800">
       {/* PWA Install Banner */}
       {deferredPrompt && (
-        <div className="bg-brand-primary text-white py-4 px-6 flex items-center justify-between shadow-2xl sticky top-0 z-[60] border-b border-white/10 animate-in fade-in slide-in-from-top duration-500">
-          <div className="flex items-center gap-4">
-            <div className="bg-white/20 p-2 rounded-xl">
-              <Smartphone size={20} className="text-white" />
+        <div className="bg-brand-primary text-white py-3 px-4 sm:py-4 sm:px-6 flex items-center justify-between shadow-2xl sticky top-0 z-[60] border-b border-white/10 animate-in fade-in slide-in-from-top duration-500 gap-3">
+          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+            <div className="bg-white/20 p-1.5 sm:p-2 rounded-xl shrink-0">
+              <Smartphone size={windowWidth < 640 ? 16 : 20} className="text-white" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-black tracking-tight leading-none mb-1">Gunakan Sebagai Aplikasi HP</span>
-              <span className="text-[10px] text-indigo-100 font-medium opacity-80 uppercase tracking-widest">Akses offline & icon di layar utama</span>
+            <div className="flex flex-col min-w-0 truncate">
+              <span className="text-xs sm:text-sm font-black tracking-tight leading-none mb-0.5 sm:mb-1 truncate">Gunakan Sebagai Aplikasi HP</span>
+              <span className="text-[8px] sm:text-[10px] text-indigo-100 font-medium opacity-80 uppercase tracking-widest truncate">Akses offline & icon layar utama</span>
             </div>
           </div>
           <button 
             onClick={handleInstallClick}
-            className="text-xs font-black uppercase bg-white text-brand-primary px-6 py-2.5 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+            className="text-[10px] sm:text-xs font-black uppercase bg-white text-brand-primary px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all shrink-0"
           >
-            Instal Sekarang
+            Instal
           </button>
         </div>
       )}
@@ -245,28 +247,28 @@ export default function App() {
       {/* Header */}
       <header className="bg-brand-surface border-b border-slate-200 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary opacity-5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-3 sm:gap-4 flex-1 truncate">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 sm:gap-4 relative z-10">
+          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
             <div className="bg-brand-primary p-2 sm:p-2.5 rounded-xl text-white shadow-indigo-200 shadow-lg flex-shrink-0">
-              <Calculator size={window.innerWidth < 640 ? 20 : 24} />
+              <Calculator size={windowWidth < 640 ? 20 : 24} />
             </div>
-            <div className="flex flex-col truncate max-w-[150px] sm:max-w-none">
+            <div className="flex flex-col flex-1 min-w-0">
               <input 
                 type="text" 
                 value={project.title}
                 onChange={(e) => setProject({ ...project, title: e.target.value })}
-                className="text-lg sm:text-xl font-extrabold text-slate-800 bg-transparent border-none focus:ring-0 p-0 block leading-tight truncate"
+                className="text-base sm:text-xl font-extrabold text-slate-800 bg-transparent border-none focus:ring-0 p-0 block leading-tight truncate w-full"
               />
               <input 
                 type="text" 
                 value={project.description}
                 onChange={(e) => setProject({ ...project, description: e.target.value })}
-                className="text-[10px] sm:text-xs text-slate-400 font-medium bg-transparent border-none focus:ring-0 p-0 block truncate leading-none mt-0.5"
+                className="text-[10px] sm:text-xs text-slate-400 font-medium bg-transparent border-none focus:ring-0 p-0 block truncate leading-none mt-0.5 w-full"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-6">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button 
               onClick={() => setIsPriceLocked(!isPriceLocked)}
               className={cn(
@@ -308,7 +310,7 @@ export default function App() {
             <div className="relative z-10 text-center md:text-left w-full md:w-auto">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Total Anggaran Aktif</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Total Seluruh Biaya</span>
               </div>
               <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white drop-shadow-sm font-mono leading-none flex flex-wrap items-baseline justify-center md:justify-start gap-1 sm:gap-2">
                 <span className="text-lg sm:text-2xl opacity-50">Rp.</span>
@@ -398,37 +400,57 @@ export default function App() {
                                 <input 
                                   type="text"
                                   value={item.description}
+                                  readOnly={true}
                                   onChange={(e) => updateItem(category.id, item.id, { description: e.target.value })}
-                                  className="w-full bg-white rounded-xl px-3 py-2 text-sm font-bold text-slate-700 shadow-sm border-none focus:ring-2 focus:ring-brand-primary"
+                                  className="w-full bg-slate-50/50 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 shadow-sm border-none focus:ring-0 cursor-default"
                                 />
                               </div>
                               
                               <div className="grid grid-cols-2 gap-3">
                                 <div className="flex flex-col gap-1">
                                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Volume & Sat</span>
-                                  <div className="flex bg-white rounded-xl shadow-sm overflow-hidden">
+                                  <div className="flex bg-white rounded-xl shadow-sm overflow-hidden items-center border border-slate-100/50 focus-within:border-brand-primary/50 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-all">
                                     {(() => {
                                       const isGalian = item.description === 'GALIAN BOR JACKING';
                                       const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                      const isLocked = isGalian && borJacking;
+                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
                                       return (
-                                        <input 
-                                          type="number" 
-                                          value={item.quantity}
-                                          disabled={isLocked}
-                                          onChange={(e) => updateItem(category.id, item.id, { quantity: Number(e.target.value) })}
-                                          className={cn(
-                                            "w-full px-3 py-2 text-sm font-black focus:ring-0 border-none",
-                                            isLocked && "text-slate-400 bg-slate-100 italic"
-                                          )}
-                                        />
+                                        <>
+                                          <button 
+                                            onClick={() => updateItem(category.id, item.id, { quantity: Math.max(0, item.quantity - 1) })}
+                                            disabled={isLocked}
+                                            className="px-2 py-2 text-slate-400 hover:text-brand-primary disabled:opacity-30 transition-colors bg-slate-50/50"
+                                            tabIndex={-1}
+                                          >
+                                            <Minus size={14} />
+                                          </button>
+                                          <input 
+                                            type="number" 
+                                            value={item.quantity}
+                                            disabled={isLocked}
+                                            onChange={(e) => updateItem(category.id, item.id, { quantity: Number(e.target.value) })}
+                                            className={cn(
+                                              "w-full px-1 py-2 text-sm text-center font-black focus:ring-0 border-none",
+                                              isLocked && "text-slate-400 bg-slate-100 italic"
+                                            )}
+                                          />
+                                          <button 
+                                            onClick={() => updateItem(category.id, item.id, { quantity: item.quantity + 1 })}
+                                            disabled={isLocked}
+                                            className="px-2 py-2 text-slate-400 hover:text-brand-primary disabled:opacity-30 transition-colors bg-slate-50/50"
+                                            tabIndex={-1}
+                                          >
+                                            <Plus size={14} />
+                                          </button>
+                                        </>
                                       );
                                     })()}
                                     <input 
                                       type="text"
                                       value={item.unit}
+                                      readOnly={true}
                                       onChange={(e) => updateItem(category.id, item.id, { unit: e.target.value })}
-                                      className="w-12 bg-slate-100/50 text-[10px] font-black text-center text-slate-500 uppercase border-l border-slate-100 focus:ring-0"
+                                      className="w-12 h-full bg-slate-50 text-[10px] font-black text-center text-slate-500 uppercase border-l border-slate-100 focus:ring-0 cursor-default"
                                     />
                                   </div>
                                 </div>
@@ -487,37 +509,59 @@ export default function App() {
                                   <input 
                                     type="text"
                                     value={item.description}
+                                    readOnly={true}
                                     onChange={(e) => updateItem(category.id, item.id, { description: e.target.value })}
-                                    className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold text-slate-700 placeholder:text-slate-300"
+                                    className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold text-slate-700 placeholder:text-slate-300 cursor-default"
                                     placeholder="Komponen Pekerjaan"
                                   />
                                 </td>
                                 <td className="py-5 text-center">
-                                  {(() => {
-                                    const isGalian = item.description === 'GALIAN BOR JACKING';
-                                    const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                    const isLocked = isGalian && borJacking;
-                                    
-                                    return (
-                                      <input 
-                                        type="number" 
-                                        value={item.quantity}
-                                        disabled={isLocked}
-                                        onChange={(e) => updateItem(category.id, item.id, { quantity: Number(e.target.value) })}
-                                        className={cn(
-                                          "w-16 bg-slate-50 rounded-xl px-2 py-2 text-sm text-center font-black focus:bg-white focus:ring-2 focus:ring-brand-primary transition-all",
-                                          isLocked && "text-slate-400 bg-slate-100 cursor-not-allowed"
-                                        )}
-                                      />
-                                    );
-                                  })()}
+                                  <div className="flex bg-slate-50 rounded-xl overflow-hidden items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-primary w-[120px] mx-auto border border-slate-100/50 shadow-inner">
+                                    {(() => {
+                                      const isGalian = item.description === 'GALIAN BOR JACKING';
+                                      const borJacking = category.items.find(i => i.description === 'BOR JACKING');
+                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
+                                      
+                                      return (
+                                        <>
+                                          <button 
+                                            onClick={() => updateItem(category.id, item.id, { quantity: Math.max(0, item.quantity - 1) })}
+                                            disabled={isLocked}
+                                            className="px-2 py-2 text-slate-400 hover:text-brand-primary hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                                            tabIndex={-1}
+                                          >
+                                            <Minus size={14} />
+                                          </button>
+                                          <input 
+                                            type="number" 
+                                            value={item.quantity}
+                                            disabled={isLocked}
+                                            onChange={(e) => updateItem(category.id, item.id, { quantity: Number(e.target.value) })}
+                                            className={cn(
+                                              "w-full px-1 py-2 text-sm text-center font-black focus:ring-0 border-none bg-transparent",
+                                              isLocked && "text-slate-400 cursor-not-allowed"
+                                            )}
+                                          />
+                                          <button 
+                                            onClick={() => updateItem(category.id, item.id, { quantity: item.quantity + 1 })}
+                                            disabled={isLocked}
+                                            className="px-2 py-2 text-slate-400 hover:text-brand-primary hover:bg-slate-100 disabled:opacity-30 transition-colors"
+                                            tabIndex={-1}
+                                          >
+                                            <Plus size={14} />
+                                          </button>
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
                                 </td>
                                 <td className="py-5">
                                   <input 
                                     type="text"
                                     value={item.unit}
+                                    readOnly={true}
                                     onChange={(e) => updateItem(category.id, item.id, { unit: e.target.value })}
-                                    className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold text-center text-slate-400 uppercase"
+                                    className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold text-center text-slate-400 uppercase cursor-default"
                                     placeholder="Sat"
                                   />
                                 </td>
@@ -558,6 +602,85 @@ export default function App() {
                     </div>
                   </div>
                 ))}
+                
+                {/* Selected Items Summary */}
+                {(() => {
+                  const selectedItems = project.categories.flatMap((cat, catIdx) => 
+                    cat.items.filter(item => item.quantity > 0).map(item => ({
+                      ...item, 
+                      categoryName: cat.name,
+                      categoryIndex: catIdx
+                    }))
+                  );
+                  
+                  if (selectedItems.length === 0) return null;
+
+                  return (
+                    <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-8 mt-10 w-full mb-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+                      
+                      <div className="flex items-center gap-3 mb-6 relative z-10">
+                        <div className="bg-brand-success/10 p-2.5 rounded-xl text-brand-success shadow-sm">
+                          <CheckCircle2 size={20} />
+                        </div>
+                        <h4 className="text-sm md:text-base font-black text-slate-800 uppercase tracking-widest">
+                          Ringkasan Biaya
+                        </h4>
+                      </div>
+
+                      <div className="space-y-3 relative z-10">
+                        {selectedItems.map((item, idx) => (
+                          <div key={`${item.id}-${idx}`} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl md:rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors border border-slate-100/50 hover:border-slate-200 shadow-sm">
+                            <div className="flex items-start gap-4">
+                              <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 shadow-sm text-slate-500 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                                {idx + 1}
+                              </div>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-sm font-bold text-slate-700">{item.description}</span>
+                                <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                  <span className="truncate max-w-[150px] sm:max-w-none px-2 py-0.5 bg-slate-200/50 rounded flex items-center">{item.categoryName}</span>
+                                  <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                  <span className="uppercase tracking-wider">{item.quantity} {item.unit} &times; Rp. {formatCurrency(item.unitPrice).replace('Rp. ', '')}</span>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-left sm:text-right flex items-center sm:block pl-11 sm:pl-0">
+                               <span className="text-sm font-black text-brand-primary bg-brand-primary/5 sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-lg whitespace-nowrap">
+                                 Rp. {formatCurrency(item.totalPrice).replace('Rp. ', '')}
+                               </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Editor Grand Total Section */}
+                <div className="bg-brand-primary rounded-[1.5rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(99,102,241,0.2)] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border border-white/10 mt-10 w-full mb-8">
+                  <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl saturate-200" />
+                  <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-brand-info opacity-20 rounded-full blur-3xl saturate-200" />
+                  
+                  <div className="relative z-10 flex flex-col items-center md:items-start w-full md:w-auto">
+                    <span className="text-[10px] sm:text-xs font-black text-indigo-200 uppercase tracking-[0.3em] mb-2 text-center md:text-left drop-shadow-sm">Total Seluruh Biaya</span>
+                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-mono flex items-baseline justify-center md:justify-start gap-2 drop-shadow-md">
+                      <span className="text-lg sm:text-2xl opacity-60">Rp.</span>
+                      {formatCurrency(grandTotal).replace('Rp. ', '')}
+                    </h3>
+                  </div>
+
+                  <div className="relative z-10 bg-white/10 rounded-2xl p-4 sm:p-5 w-full md:w-auto min-w-[200px] border border-white/10 backdrop-blur-md hidden sm:block">
+                    <div className="flex justify-between items-center mb-2">
+                       <span className="text-xs font-bold text-indigo-100 uppercase tracking-wider">Subtotal</span>
+                       <span className="text-sm font-black text-white">Rp. {formatCurrency(subTotal).replace('Rp. ', '')}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-0 opacity-50">
+                       <span className="text-xs font-bold text-indigo-100 uppercase tracking-wider">Pajak / Diskon</span>
+                       <span className="text-sm font-black text-white">Rp. 0</span>
+                    </div>
+                  </div>
+                </div>
+
                 </motion.div>
               ) : (
                 <motion.div 
