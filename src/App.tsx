@@ -49,7 +49,7 @@ const CAT_INDICATOR_COLORS = [
 
 const INITIAL_PROJECT: RABProject = {
   id: 'project-1',
-  title: 'RAB BIAYA PEMASANGAN BARU',
+  title: 'SIMULASI RAB BIAYA SR',
   description: 'Simulasi rincian biaya pemasangan sambungan rumah (SR) baru berdasarkan standar operasional.',
   categories: [
     {
@@ -64,13 +64,13 @@ const INITIAL_PROJECT: RABProject = {
       id: 'cat-2',
       name: 'II. BIAYA TAMBAHAN',
       items: [
-        { id: 'item-3', description: 'Tambahan Pipa HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
+        { id: 'item-3', description: 'TAMBAHAN PIPA HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
         { id: 'item-4', description: 'BOR JACKING', quantity: 0, unit: 'm', unitPrice: 45000, totalPrice: 0 },
         { id: 'item-5', description: 'GALIAN BOR JACKING', quantity: 0, unit: 'ls', unitPrice: 156800, totalPrice: 0 },
-        { id: 'item-6', description: 'RABAT CROSING ASPAL', quantity: 0, unit: 'm', unitPrice: 29700, totalPrice: 0 },
-        { id: 'item-7', description: 'RABAT JALAN', quantity: 0, unit: 'm', unitPrice: 23700, totalPrice: 0 },
-        { id: 'item-8', description: 'RABAT HALAMAN', quantity: 0, unit: 'm', unitPrice: 14800, totalPrice: 0 },
-        { id: 'item-9', description: 'PAVING', quantity: 0, unit: 'm', unitPrice: 7600, totalPrice: 0 },
+        { id: 'item-6', description: 'PENGEMBALIAN CROSSING ASPAL', quantity: 0, unit: 'm', unitPrice: 29700, totalPrice: 0 },
+        { id: 'item-7', description: 'PENGEMBALIAN RABATAN JALAN', quantity: 0, unit: 'm', unitPrice: 23700, totalPrice: 0 },
+        { id: 'item-8', description: 'PENGEMBALIAN RABATAN HALAMAN', quantity: 0, unit: 'm', unitPrice: 14800, totalPrice: 0 },
+        { id: 'item-9', description: 'PENGEMBALIAN PAVING', quantity: 0, unit: 'm', unitPrice: 7600, totalPrice: 0 },
       ]
     },
     {
@@ -749,16 +749,13 @@ export default function App() {
                     <div className="p-4 md:p-5 bg-white/5 rounded-2xl border border-white/10">
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Standard Operational Procedure</p>
                       <p className="text-xs md:text-[13px] leading-relaxed text-slate-300">
-                        Hasil estimasi ini bersifat acuan untuk pengajuan resmi sambungan rumah baru (SR). Harga dapat berubah sesuai survei teknis lapangan.
+                        Aplikasi Ini Sebagai Estimasi Dan Simulasi Untuk Memudakan Perhitungan Biaya Di Lapangan Dan Untuk Lebih Akuratnya Bisa Langsung Cek Di CETET.
                       </p>
                     </div>
                     <div className="flex items-start md:items-center gap-4 p-4 md:p-5 bg-brand-primary/10 rounded-2xl">
                       <div className="text-brand-secondary shrink-0">
                         <Info size={20} />
-                      </div>
-                      <p className="text-[11px] md:text-xs font-bold text-slate-200 leading-snug">
-                        Pastikan Bor Jacking dan Galian sudah terhitung akurat sesuai spesifikasi jalan.
-                      </p>
+                      </div
                     </div>
                  </div>
                </div>
