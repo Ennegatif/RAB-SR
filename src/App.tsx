@@ -396,7 +396,7 @@ export default function App() {
                         {category.items.map((item) => (
                            <div key={item.id} className="p-4 rounded-2xl bg-slate-50/50 border border-slate-100 flex flex-col gap-4">
                               <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Komponen Pekerjaan</span>
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{catIdx === 0 ? "ADMINISTRASI" : catIdx === 1 ? "PEKERJAAN" : catIdx === 2 ? "PEMBELIAN" : "Komponen Pekerjaan"}</span>
                                 <input 
                                   type="text"
                                   value={item.description}
@@ -494,7 +494,7 @@ export default function App() {
                           <table className="w-full text-left">
                           <thead>
                             <tr className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 border-b border-slate-50">
-                              <th className="pb-4 text-left font-black w-[40%]">Pekerjaan</th>
+                              <th className="pb-4 text-left font-black w-[40%]">{catIdx === 0 ? "ADMINISTRASI" : catIdx === 1 ? "PEKERJAAN" : catIdx === 2 ? "PEMBELIAN" : "Komponen Pekerjaan"}</th>
                               <th className="pb-4 text-center font-black">Volume</th>
                               <th className="pb-4 text-center font-black">Unit</th>
                               <th className="pb-4 text-right font-black w-32">Harga</th>
@@ -512,7 +512,7 @@ export default function App() {
                                     readOnly={true}
                                     onChange={(e) => updateItem(category.id, item.id, { description: e.target.value })}
                                     className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold text-slate-700 placeholder:text-slate-300 cursor-default"
-                                    placeholder="Komponen Pekerjaan"
+                                    placeholder={catIdx === 0 ? "ADMINISTRASI" : catIdx === 1 ? "PEKERJAAN" : catIdx === 2 ? "PEMBELIAN" : "Komponen Pekerjaan"}
                                   />
                                 </td>
                                 <td className="py-5 text-center">
