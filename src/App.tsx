@@ -11,7 +11,6 @@ import {
   Download, 
   PieChart as PieChartIcon, 
   List, 
-  Calculator, 
   Briefcase,
   ChevronDown,
   ChevronRight,
@@ -20,7 +19,8 @@ import {
   Lock,
   Unlock,
   CheckCircle2,
-  Printer
+  Printer,
+  Droplets
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -271,7 +271,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 sm:gap-4 relative z-10">
           <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
             <div className="bg-brand-primary p-2 sm:p-2.5 rounded-xl text-white shadow-indigo-200 shadow-lg flex-shrink-0">
-              <Calculator size={windowWidth < 640 ? 20 : 24} />
+              <Droplets size={windowWidth < 640 ? 20 : 24} />
             </div>
             <div className="flex flex-col flex-1 min-w-0">
               <input 
