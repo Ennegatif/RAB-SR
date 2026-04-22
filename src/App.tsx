@@ -64,7 +64,7 @@ const INITIAL_PROJECT: RABProject = {
       id: 'cat-2',
       name: 'II. BIAYA TAMBAHAN',
       items: [
-        { id: 'item-3', description: 'Tambahan Pipa HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
+        { id: 'item-3', description: 'Tambahan Pipa HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18500, totalPrice: 0 },
         { id: 'item-4', description: 'BOR JACKING', quantity: 0, unit: 'm', unitPrice: 45000, totalPrice: 0 },
         { id: 'item-5', description: 'GALIAN BOR JACKING', quantity: 0, unit: 'ls', unitPrice: 156800, totalPrice: 0 },
         { id: 'item-6', description: 'PENGEMBALIAN CROSSING ASPAL', quantity: 0, unit: 'm', unitPrice: 29700, totalPrice: 0 },
