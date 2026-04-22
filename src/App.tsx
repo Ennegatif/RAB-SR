@@ -19,7 +19,8 @@ import {
   Smartphone,
   Lock,
   Unlock,
-  CheckCircle2
+  CheckCircle2,
+  Printer
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -49,7 +50,7 @@ const CAT_INDICATOR_COLORS = [
 
 const INITIAL_PROJECT: RABProject = {
   id: 'project-1',
-  title: 'SIMULASI RAB BIAYA SR',
+  title: 'RAB BIAYA PEMASANGAN BARU',
   description: 'Simulasi rincian biaya pemasangan sambungan rumah (SR) baru berdasarkan standar operasional.',
   categories: [
     {
@@ -64,7 +65,7 @@ const INITIAL_PROJECT: RABProject = {
       id: 'cat-2',
       name: 'II. BIAYA TAMBAHAN',
       items: [
-        { id: 'item-3', description: 'TAMBAHAN PIPA HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
+        { id: 'item-3', description: 'Tambahan Pipa HDPE Ø ½', quantity: 0, unit: 'm', unitPrice: 18900, totalPrice: 0 },
         { id: 'item-4', description: 'BOR JACKING', quantity: 0, unit: 'm', unitPrice: 45000, totalPrice: 0 },
         { id: 'item-5', description: 'GALIAN BOR JACKING', quantity: 0, unit: 'ls', unitPrice: 156800, totalPrice: 0 },
         { id: 'item-6', description: 'PENGEMBALIAN CROSSING ASPAL', quantity: 0, unit: 'm', unitPrice: 29700, totalPrice: 0 },
@@ -144,22 +145,34 @@ export default function App() {
           return item;
         });
 
-        // Business Logic: If BOR JACKING > 0, ensure GALIAN BOR JACKING is 1, otherwise 0
+        // Business Logic for Category II
         const borJacking = updatedItems.find(i => i.description === 'BOR JACKING');
         const galian = updatedItems.find(i => i.description === 'GALIAN BOR JACKING');
+        const crossingAspal = updatedItems.find(i => i.description === 'PENGEMBALIAN CROSSING ASPAL');
 
-        if (borJacking && galian) {
-          const targetQty = borJacking.quantity > 0 ? 1 : 0;
-          if (galian.quantity !== targetQty) {
-            return {
-              ...cat,
-              items: updatedItems.map(i => {
-                if (i.id === galian.id) {
-                  return { ...i, quantity: targetQty, totalPrice: targetQty * i.unitPrice };
-                }
-                return i;
-              })
-            };
+        if (borJacking) {
+          let hasAutomationChanges = false;
+          const finalItems = updatedItems.map(i => {
+            // 1. Galian logic (1 if BJ > 0, else 0)
+            if (galian && i.id === galian.id) {
+              const targetGalianQty = borJacking.quantity > 0 ? 1 : 0;
+              if (i.quantity !== targetGalianQty) {
+                hasAutomationChanges = true;
+                return { ...i, quantity: targetGalianQty, totalPrice: targetGalianQty * i.unitPrice };
+              }
+            }
+            // 2. Crossing Aspal logic (Always same as BJ quantity)
+            if (crossingAspal && i.id === crossingAspal.id) {
+              if (i.quantity !== borJacking.quantity) {
+                hasAutomationChanges = true;
+                return { ...i, quantity: borJacking.quantity, totalPrice: borJacking.quantity * i.unitPrice };
+              }
+            }
+            return i;
+          });
+
+          if (hasAutomationChanges) {
+            return { ...cat, items: finalItems };
           }
         }
 
@@ -222,7 +235,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-bg font-sans selection:bg-brand-primary selection:text-white pb-20 text-slate-800">
+    <div className="min-h-screen bg-sky-100 font-sans selection:bg-brand-primary selection:text-white pb-20 text-slate-800 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-300/30 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-200/40 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-white/60 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="print:hidden relative z-10">
       {/* PWA Install Banner */}
       {deferredPrompt && (
         <div className="bg-brand-primary text-white py-3 px-4 sm:py-4 sm:px-6 flex items-center justify-between shadow-2xl sticky top-0 z-[60] border-b border-white/10 animate-in fade-in slide-in-from-top duration-500 gap-3">
@@ -281,6 +302,14 @@ export default function App() {
               {isPriceLocked ? <Lock size={14} /> : <Unlock size={14} />}
               <span className="hidden min-[400px]:inline">{isPriceLocked ? 'Harga Terkunci' : 'Harga Terbuka'}</span>
             </button>
+            <button 
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest bg-white text-slate-700 border border-slate-200 hover:border-brand-primary/50 transition-all shadow-sm"
+              title="Cetak RAB"
+            >
+              <Printer size={14} className="text-brand-primary" />
+              <span className="hidden min-[500px]:inline">Cetak RAB</span>
+            </button>
             <div className="hidden sm:flex flex-col items-end">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Update Terakhir</span>
               <span className="text-sm font-bold text-slate-700">{new Date().toLocaleDateString('id-ID')}</span>
@@ -301,29 +330,7 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {/* Quick Stats Grid */}
-        <div className="mb-8 md:mb-12">
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl text-white flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 relative overflow-hidden border border-white/5">
-            <div className="absolute top-0 left-0 w-80 h-80 bg-brand-primary opacity-20 rounded-full blur-[120px] -ml-20 -mt-20 animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-60 h-60 bg-brand-info opacity-10 rounded-full blur-[100px] -mr-10 -mb-10"></div>
-            
-            <div className="relative z-10 text-center md:text-left w-full md:w-auto">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Total Seluruh Biaya</span>
-              </div>
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white drop-shadow-sm font-mono leading-none flex flex-wrap items-baseline justify-center md:justify-start gap-1 sm:gap-2">
-                <span className="text-lg sm:text-2xl opacity-50">Rp.</span>
-                <span className="truncate">{formatCurrency(grandTotal).replace('Rp. ', '')}</span>
-              </h2>
-            </div>
 
-            <div className="relative z-10 hidden md:flex flex-col items-end gap-1 opacity-50">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Referensi Proyek</span>
-              <p className="text-sm font-bold text-white uppercase tracking-wider">Sambungan Rumah (SR)</p>
-            </div>
-          </div>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-6 md:mb-10">
           <div className="flex p-1 bg-slate-200/50 rounded-2xl overflow-x-auto no-scrollbar touch-pan-x">
@@ -331,7 +338,7 @@ export default function App() {
               onClick={() => setActiveTab('editor')}
               className={`flex-1 flex items-center justify-center gap-2 px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'editor' ? 'bg-white text-brand-primary shadow-md' : 'text-slate-500 hover:text-brand-primary'}`}
             >
-              <List size={windowWidth < 640 ? 16 : 18} /> Editor Pekerjaan
+              <List size={windowWidth < 640 ? 16 : 18} /> Rincian Biaya
             </button>
             <button 
               onClick={() => setActiveTab('summary')}
@@ -379,7 +386,7 @@ export default function App() {
                         </div>
                         <div className="flex items-center gap-4 justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-50">
                            <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto">
-                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:mb-1 italic">Total Seksi</span>
+                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:mb-1 italic">TOTAL RINCIAN BIAYA</span>
                              <span className="text-base md:text-xl font-black text-slate-800">
                                Rp. {formatCurrency(category.items.reduce((s, i) => s + i.totalPrice, 0))}
                              </span>
@@ -412,8 +419,9 @@ export default function App() {
                                   <div className="flex bg-white rounded-xl shadow-sm overflow-hidden items-center border border-slate-100/50 focus-within:border-brand-primary/50 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-all">
                                     {(() => {
                                       const isGalian = item.description === 'GALIAN BOR JACKING';
+                                      const isCrossingAspal = item.description === 'PENGEMBALIAN CROSSING ASPAL';
                                       const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
+                                      const isLocked = (isGalian && borJacking) || (isCrossingAspal && borJacking) || catIdx === 0;
                                       return (
                                         <>
                                           <button 
@@ -519,8 +527,9 @@ export default function App() {
                                   <div className="flex bg-slate-50 rounded-xl overflow-hidden items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-primary w-[120px] mx-auto border border-slate-100/50 shadow-inner">
                                     {(() => {
                                       const isGalian = item.description === 'GALIAN BOR JACKING';
+                                      const isCrossingAspal = item.description === 'PENGEMBALIAN CROSSING ASPAL';
                                       const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
+                                      const isLocked = (isGalian && borJacking) || (isCrossingAspal && borJacking) || catIdx === 0;
                                       
                                       return (
                                         <>
@@ -657,12 +666,12 @@ export default function App() {
                 })()}
 
                 {/* Editor Grand Total Section */}
-                <div className="bg-brand-primary rounded-[1.5rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(99,102,241,0.2)] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border border-white/10 mt-10 w-full mb-8">
+                <div className="bg-gradient-to-r from-indigo-950 to-blue-500 rounded-[1.5rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(30,58,138,0.3)] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border border-white/10 mt-10 w-full mb-8">
                   <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl saturate-200" />
-                  <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-brand-info opacity-20 rounded-full blur-3xl saturate-200" />
+                  <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-sky-400 opacity-20 rounded-full blur-3xl saturate-200" />
                   
                   <div className="relative z-10 flex flex-col items-center md:items-start w-full md:w-auto">
-                    <span className="text-[10px] sm:text-xs font-black text-indigo-200 uppercase tracking-[0.3em] mb-2 text-center md:text-left drop-shadow-sm">Total Seluruh Biaya</span>
+                    <span className="text-[10px] sm:text-xs font-black text-blue-200 uppercase tracking-[0.3em] mb-2 text-center md:text-left drop-shadow-sm">Total Seluruh Biaya</span>
                     <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-mono flex items-baseline justify-center md:justify-start gap-2 drop-shadow-md">
                       <span className="text-lg sm:text-2xl opacity-60">Rp.</span>
                       {formatCurrency(grandTotal).replace('Rp. ', '')}
@@ -671,11 +680,11 @@ export default function App() {
 
                   <div className="relative z-10 bg-white/10 rounded-2xl p-4 sm:p-5 w-full md:w-auto min-w-[200px] border border-white/10 backdrop-blur-md hidden sm:block">
                     <div className="flex justify-between items-center mb-2">
-                       <span className="text-xs font-bold text-indigo-100 uppercase tracking-wider">Subtotal</span>
+                       <span className="text-xs font-bold text-blue-100 uppercase tracking-wider">Subtotal</span>
                        <span className="text-sm font-black text-white">Rp. {formatCurrency(subTotal).replace('Rp. ', '')}</span>
                     </div>
                     <div className="flex justify-between items-center mb-0 opacity-50">
-                       <span className="text-xs font-bold text-indigo-100 uppercase tracking-wider">Pajak / Diskon</span>
+                       <span className="text-xs font-bold text-blue-100 uppercase tracking-wider">Pajak / Diskon</span>
                        <span className="text-sm font-black text-white">Rp. 0</span>
                     </div>
                   </div>
@@ -719,7 +728,7 @@ export default function App() {
 
                     <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                       {chartData.map((cat, idx) => (
-                        <div key={idx} className="p-4 md:p-5 rounded-2xl bg-brand-bg border border-slate-100">
+                        <div key={idx} className="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-100">
                           <div className="flex items-center justify-between mb-1">
                              <div className="flex items-center gap-2">
                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
@@ -749,29 +758,15 @@ export default function App() {
                     <div className="p-4 md:p-5 bg-white/5 rounded-2xl border border-white/10">
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Standard Operational Procedure</p>
                       <p className="text-xs md:text-[13px] leading-relaxed text-slate-300">
-                        Aplikasi Ini Sebagai Estimasi Dan Simulasi Untuk Memudakan Perhitungan Biaya Di Lapangan Dan Untuk Lebih Akuratnya Bisa Langsung Cek Di CETET.
+                        Aplikasi Ini Untuk Menghitung Simulasi biaya pemasangan Agar Memudahkan Bag. Teknik Di Lapangan Lebih Akuratnya Bisa Langsung Cek CETET.
                       </p>
                     </div>
-                    <div className="flex items-start md:items-center gap-4 p-4 md:p-5 bg-brand-primary/10 rounded-2xl">
-                      <div className="text-brand-secondary shrink-0">
-                        <Info size={20} />
-                      </div
-                    </div>
+
                  </div>
                </div>
             </div>
 
-            <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] p-8 md:p-10 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-brand-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <h3 className="text-md md:text-lg font-black text-slate-800 mb-4 md:mb-6 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-brand-primary" />
-                  Memo Proyek
-                </h3>
-                <textarea 
-                  className="w-full min-h-[120px] md:min-h-[160px] bg-slate-50 rounded-2xl p-5 md:p-6 text-sm font-medium text-slate-700 border-none focus:ring-2 focus:ring-brand-primary/20 placeholder:text-slate-300 transition-all resize-none shadow-inner"
-                  placeholder="Ketik rincian teknis atau catatan di sini..."
-                ></textarea>
-            </div>
+
           </div>
         </div>
       </main>
@@ -779,6 +774,84 @@ export default function App() {
       <footer className="py-20 text-center opacity-30">
         <p className="text-xs font-black text-slate-900 uppercase tracking-[0.6em]">SIMULASI RAB SR • ARCHITECTURAL FINANCE</p>
       </footer>
+      </div>
+
+      {/* Print-only layout */}
+      <div className="hidden print:block p-10 bg-white min-h-screen text-slate-900">
+        <div className="text-center mb-10 border-b-2 border-slate-900 pb-6">
+          <h1 className="text-2xl font-black uppercase tracking-widest mb-1">RENCANA ANGGARAN BIAYA (RAB)</h1>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">SAMBUNGAN RUMAH BARU (SR)</p>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-8 mb-10">
+          <div>
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Tanggal Cetak</p>
+            <p className="text-sm font-bold">{new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Versi Dokumen</p>
+            <p className="text-sm font-bold">SIMULASI-01.RAB.SR</p>
+          </div>
+        </div>
+
+        <table className="w-full border-collapse border border-slate-300 mb-10">
+          <thead>
+            <tr className="bg-slate-100">
+              <th className="border border-slate-300 px-4 py-2 text-left text-xs uppercase font-black font-sans">Deskripsi Pekerjaan</th>
+              <th className="border border-slate-300 px-4 py-2 text-center text-xs uppercase font-black w-24">Vol</th>
+              <th className="border border-slate-300 px-4 py-2 text-center text-xs uppercase font-black w-20">Sat</th>
+              <th className="border border-slate-300 px-4 py-2 text-right text-xs uppercase font-black w-32">Harga Satuan</th>
+              <th className="border border-slate-300 px-4 py-2 text-right text-xs uppercase font-black w-40">Jumlah Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {project.categories.map((category) => (
+              <React.Fragment key={category.id}>
+                <tr className="bg-slate-50">
+                  <td colSpan={5} className="border border-slate-300 px-4 py-2 text-xs font-black uppercase tracking-wider">{category.name}</td>
+                </tr>
+                {category.items.filter(item => item.quantity > 0).map((item) => (
+                  <tr key={item.id}>
+                    <td className="border border-slate-300 px-4 py-2 text-xs">{item.description}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-xs text-center">{item.quantity}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-xs text-center uppercase">{item.unit}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-xs text-right">Rp. {formatCurrency(item.unitPrice).replace('Rp. ', '')}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-xs text-right font-bold">Rp. {formatCurrency(item.totalPrice).replace('Rp. ', '')}</td>
+                  </tr>
+                ))}
+                {category.items.filter(item => item.quantity > 0).length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="border border-slate-300 px-4 py-3 text-center text-[10px] italic text-slate-400 font-medium">Tidak ada rincian biaya pada seksi ini</td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="bg-slate-900 text-white">
+              <td colSpan={4} className="border border-slate-900 px-4 py-4 text-xs font-black uppercase tracking-widest text-right">Total Seluruh RAB</td>
+              <td className="border border-slate-900 px-4 py-4 text-base font-black text-right">Rp. {formatCurrency(grandTotal).replace('Rp. ', '')}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div className="mt-12 border-t pt-8">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 italic">Catatan Teknis & Ketentuan:</p>
+          <div className="grid grid-cols-2 gap-10">
+            <div className="space-y-2">
+              <p className="text-[10px] leading-relaxed text-slate-500 italic">
+                * Dokumen ini adalah hasil simulasi kalkulasi biaya pemasangan sambungan rumah baru (SR).<br />
+                * Harga yang tertera bersifat acuan dan dapat berubah sesuai dengan hasil survei teknis di lapangan oleh Bagian Teknik.<br />
+                * Segala bentuk revisi akan disesuaikan pada saat pengajuan resmi.
+              </p>
+            </div>
+            <div className="text-center pt-8">
+               <div className="w-48 h-24 border-b border-slate-300 mx-auto mb-2"></div>
+               <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Pejabat Berwenang / Teknik</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
