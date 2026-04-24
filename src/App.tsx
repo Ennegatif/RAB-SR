@@ -173,13 +173,6 @@ export default function App() {
                 return { ...i, quantity: targetGalianQty, totalPrice: targetGalianQty * i.unitPrice };
               }
             }
-            // 2. Crossing Aspal logic (Always same as BJ quantity)
-            if (crossingAspal && i.id === crossingAspal.id) {
-              if (i.quantity !== borJacking.quantity) {
-                hasAutomationChanges = true;
-                return { ...i, quantity: borJacking.quantity, totalPrice: borJacking.quantity * i.unitPrice };
-              }
-            }
             return i;
           });
 
@@ -434,9 +427,8 @@ export default function App() {
                                   <div className="flex bg-white rounded-xl shadow-sm overflow-hidden items-center border border-slate-100/50 focus-within:border-brand-primary/50 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-all">
                                     {(() => {
                                       const isGalian = item.description === 'GALIAN BOR JACKING';
-                                      const isCrossingAspal = item.description === 'PENGEMBALIAN CROSSING ASPAL';
                                       const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                      const isLocked = (isGalian && borJacking) || (isCrossingAspal && borJacking) || catIdx === 0;
+                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
                                       return (
                                         <>
                                           <button 
@@ -545,9 +537,8 @@ export default function App() {
                                   <div className="flex bg-slate-50 rounded-xl overflow-hidden items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-primary w-[120px] mx-auto border border-slate-100/50 shadow-inner">
                                     {(() => {
                                       const isGalian = item.description === 'GALIAN BOR JACKING';
-                                      const isCrossingAspal = item.description === 'PENGEMBALIAN CROSSING ASPAL';
                                       const borJacking = category.items.find(i => i.description === 'BOR JACKING');
-                                      const isLocked = (isGalian && borJacking) || (isCrossingAspal && borJacking) || catIdx === 0;
+                                      const isLocked = (isGalian && borJacking) || catIdx === 0;
                                       
                                       return (
                                         <>
